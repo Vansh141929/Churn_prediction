@@ -1,173 +1,144 @@
-# Customer Churn Prediction – ML + Business Intelligence
+# Customer Churn Prediction
 
-This project focuses on predicting customer churn for subscription-based digital services using machine learning and converting predictions into business-ready decisions via an interactive Streamlit dashboard.
+An interactive churn-risk assessment project that combines a trained XGBoost model with business rules and a Streamlit dashboard. It is designed to demonstrate how customer data can be turned into risk signals that support retention planning.
 
-Instead of stopping at model accuracy, the project emphasizes how churn models are actually used in companies — by combining ML probabilities with business rules to support retention strategies.
+> **Project status:** Educational / portfolio project. Predictions are decision-support signals and should not be treated as guarantees of customer behavior.
 
----
+## Table of Contents
 
-## Project Motivation
+- [Overview](#overview)
+- [Business Problem](#business-problem)
+- [Dataset and Features](#dataset-and-features)
+- [Solution Workflow](#solution-workflow)
+- [Modeling and Evaluation](#modeling-and-evaluation)
+- [Risk Assessment](#risk-assessment)
+- [Dashboard](#dashboard)
+- [Repository Structure](#repository-structure)
+- [Getting Started](#getting-started)
+- [Limitations](#limitations)
+- [Potential Next Steps](#potential-next-steps)
+- [Author](#author)
 
-Customer churn is a major revenue challenge for subscription businesses.
-The goal of this project is to:
+## Overview
 
-- Identify customers likely to churn
-- Understand key churn drivers
-- Present results in a usable decision system, not just notebooks
+Customer churn can reduce recurring revenue and increase the cost of acquiring replacement customers. This project explores a machine-learning approach to identifying customers who may be at greater risk of leaving a subscription service.
 
-This project was inspired by the IBM Watson Analytics churn use case.
+The repository includes a Streamlit application that accepts customer and service details, obtains a churn probability from the saved model, applies a business-rule adjustment, and presents an easy-to-read risk category.
 
----
+## Business Problem
 
-## Dataset
+Subscription businesses need to identify customers who may be considering leaving so that retention teams can prioritize outreach. Churn risk can be associated with factors such as tenure, contract type, billing and payment behavior, and the services available to a customer.
 
-- Telco Customer Churn dataset
-- ~7,000 customer records
-- Binary target variable: Churn (Yes / No)
+The project demonstrates a workflow for turning these signals into a prediction and a practical risk assessment.
 
-### Feature Groups
+## Dataset and Features
 
-- Customer tenure and contract details
-- Billing and payment methods
-- Internet and service subscriptions
-- Customer support and security services
+The project is based on the Telco Customer Churn dataset, which contains roughly 7,000 customer records and a binary churn outcome (`Yes` / `No`). The feature groups described in the project include:
 
----
+- customer tenure and contract type
+- monthly and total charges
+- internet service and payment method
+- support, security, and other subscribed services
+- billing preferences
 
-## Approach
+The application collects a subset of these customer details and constructs model features before prediction.
 
-### 1. Exploratory Data Analysis
-- Churn distribution analysis
-- Contract type vs churn
-- Tenure vs churn trends
-- Identification of high-impact features
+## Solution Workflow
 
-### 2. Data Preprocessing
-- Missing value handling (TotalCharges)
-- Encoding categorical variables
-- Feature scaling
-- Handling class imbalance
+1. **Explore the data** to understand churn distribution and relationships between customer characteristics and churn.
+2. **Prepare the data** by handling missing values, encoding categorical features, and scaling numerical inputs as required by the training workflow.
+3. **Engineer features** such as average monthly charges and a high-tenure indicator.
+4. **Train and compare classifiers**, including Logistic Regression, Random Forest, and XGBoost, as described in the project documentation.
+5. **Evaluate model performance** with classification metrics, with attention to recall because missed at-risk customers can be costly.
+6. **Serve predictions** in the Streamlit app and supplement the model probability with transparent business rules.
 
-### 3. Feature Engineering
-- Average monthly spend
-- High-tenure indicator
-- Contract and service-based flags
+## Modeling and Evaluation
 
----
-
-## Models Used
-
-- Logistic Regression (baseline)
-- Random Forest
-- XGBoost (final model)
-
-XGBoost was selected for its ability to capture non-linear relationships and interactions between customer behavior and service usage.
-
----
-
-## Model Evaluation
-
-Evaluation focused on metrics relevant to churn problems:
+The repository's application loads a serialized XGBoost model and scaler from the `models/` directory. The project documentation describes evaluating candidate models with:
 
 - Accuracy
 - Precision
-- Recall (priority)
-- F1-Score
+- Recall
+- F1-score
 - ROC-AUC
-- Confusion Matrix
+- Confusion matrix
 
-Recall was prioritized since failing to identify a churned customer is more costly than a false positive.
+Recall is emphasized as an important metric for identifying as many potentially churning customers as practical. Actual metric values should be reported alongside the model artifacts or training results when available; this README does not claim specific performance scores.
 
----
+## Risk Assessment
 
-## Why Probabilities Look Conservative
+The dashboard shows both the model probability and a business-adjusted risk score. The current app increases the score for selected conditions, including very low tenure, a month-to-month contract, lack of tech support or online security, and paperless billing. The score is capped at 100% and displayed using these thresholds:
 
-The model outputs calibrated churn probabilities, which tend to be conservative by design.
+| Business risk score | Dashboard category |
+| --- | --- |
+| Below 40% | Baseline risk |
+| 40% to below 65% | Moderate risk |
+| 65% and above | High risk |
 
-In real churn systems:
-- Even 10–25% churn probability is considered risky
-- Decisions are rarely made using raw probabilities alone
+These rules are heuristic business logic, not a separately trained or calibrated probability model. They should be validated against business outcomes before being used operationally.
 
-To address this, a business risk layer was added.
+## Dashboard
 
----
+The Streamlit app provides controls for customer tenure, contract, monthly charges, internet service, payment method, and selected service signals. It computes an estimated total charge from tenure and monthly charges, then displays the model probability and risk classification after the user runs the analysis.
 
-## Business Risk Layer
+The main application file is `app.py`.
 
-A rule-based risk adjustment is applied on top of the ML probability using factors such as:
+## Repository Structure
 
-- Very low tenure
-- Month-to-month contracts
-- Lack of tech support or online security
-- Paperless billing
-
-This converts model outputs into actionable churn risk levels, similar to real production systems.
-
----
-
-## Streamlit Dashboard
-
-The project includes a production-style Streamlit application with:
-
-- Clean, enterprise-style UI
-- KPI summary cards
-- Dataset-aligned input controls
-- Auto-computed lifetime value
-- Business-adjusted churn risk classification
-
-### Risk Levels
-- Low Risk
-- Moderate Risk
-- High Risk
-
----
-
-## Project Structure
-
-customer-churn-prediction/
-│
-├── app.py                  # Streamlit application
-├── models/
-│   ├── churn_model.pkl     # Trained XGBoost model
-│   └── scaler.pkl          # Feature scaler
-│
-├── notebooks/
-│   ├── eda.ipynb
-│   └── model_training.ipynb
-│
-├── data/
-│   └── raw/
-│
-├── requirements.txt
+```text
+Churn_prediction/
+├── app.py                 # Main Streamlit application
+├── app_*.py               # Additional dashboard variants
+├── data/                  # Dataset files
+├── models/                # Serialized model and scaler used by the app
+├── notebooks/             # Analysis and modeling notebooks
+├── .streamlit/            # Streamlit configuration
+├── requirements.txt       # Python dependencies
+├── DEPLOYMENT.md          # Deployment notes
 └── README.md
+```
 
----
+The app expects the model and scaler files at `models/churn_model.pkl` and `models/scaler.pkl` respectively. Ensure these files are present before running the application.
 
-## How to Run
+## Getting Started
 
+### Requirements
+
+- Python version compatible with the packages listed in `requirements.txt`
+- The saved model and scaler files in `models/`
+
+### Install dependencies
+
+```bash
+git clone https://github.com/Vansh141929/Churn_prediction.git
+cd Churn_prediction
 pip install -r requirements.txt
+```
+
+### Run the dashboard
+
+```bash
 streamlit run app.py
+```
 
----
+Streamlit will print a local URL in the terminal. Open that URL in a browser to use the dashboard.
 
-## Key Takeaways
+## Limitations
 
-- Churn is driven more by service experience than price alone
-- Calibrated ML models require business interpretation
-- Deployment quality matters as much as model accuracy
+- The displayed business risk score includes manually selected rule-based adjustments; it is not a calibrated probability of churn.
+- Model output depends on the training data, feature preparation, and model artifacts included with the project.
+- The dashboard uses a subset of customer attributes, so results may not reflect every factor in the original dataset.
+- This project is intended for demonstration and learning. Any real-world use would require validation, monitoring, privacy safeguards, and review for fairness and business suitability.
 
----
+## Potential Next Steps
 
-## Future Improvements
-
-- SHAP-based feature explainability
-- Customer-specific churn explanations
-- Retention strategy recommendations
-- Cloud deployment
-
----
+- Add model performance results and a reproducible training/evaluation workflow.
+- Explain individual predictions with SHAP or another feature-attribution method.
+- Validate and tune the business rules using historical retention outcomes.
+- Add automated tests for feature preparation and prediction behavior.
+- Deploy the app with documented configuration and model-versioning practices.
 
 ## Author
 
 Ragini Kalra  
-Machine Learning & Data Analytics Project
+Machine Learning and Data Analytics Project
