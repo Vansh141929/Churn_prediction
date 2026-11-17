@@ -31,13 +31,17 @@ scaler = joblib.load(scaler_path)
 FEATURES = model.get_booster().feature_names
 
 # ======================================================
-# SLEEK MINIMALIST STYLING (MATCHING DESIGN)
+# SLEEK MINIMALIST STYLING WITH SUBTLE PINK GRADIENT
 # ======================================================
 st.markdown("""
 <style>
-/* Base Dark Background */
+/* Base Dark Background with subtle ambient pink/magenta glow */
 html, body, [data-testid="stAppViewContainer"], .main {
     background-color: #0b0c10 !important;
+    background-image: 
+        radial-gradient(circle at 85% 12%, rgba(236, 72, 153, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 15% 45%, rgba(244, 63, 94, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 60% 85%, rgba(219, 39, 119, 0.04) 0%, transparent 50%) !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     color: #ffffff !important;
 }
@@ -56,13 +60,16 @@ html, body, [data-testid="stAppViewContainer"], .main {
     max-width: 1200px !important;
 }
 
-/* Constellation top navigation glyphs */
+/* Constellation top navigation glyphs with pink-purple gradient */
 .top-glyphs {
     font-size: 13px;
-    color: #9333ea;
+    background: linear-gradient(90deg, #a855f7, #f43f5e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: 16px;
     margin-bottom: 24px;
     font-weight: 700;
+    display: inline-block;
 }
 
 /* Monolithic Typography */
@@ -99,16 +106,28 @@ html, body, [data-testid="stAppViewContainer"], .main {
 }
 
 .accent-purple {
-    color: #a855f7;
+    background: linear-gradient(135deg, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
 }
 
 .accent-amber {
     color: #f59e0b;
 }
 
-/* Subtle Divider */
+.accent-pink {
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Subtle Divider with soft pink gradient fade */
 .custom-divider {
-    border-top: 1px solid #1a1d24;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(236, 72, 153, 0.28), rgba(168, 85, 247, 0.2), transparent);
+    border: none;
     margin-top: 50px;
     margin-bottom: 50px;
 }
@@ -131,6 +150,13 @@ div[data-baseweb="select"] > div {
     border-radius: 7px !important;
     color: #ffffff !important;
     min-height: 42px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+div[data-baseweb="select"] > div:hover,
+div[data-baseweb="select"] > div:focus-within {
+    border-color: rgba(236, 72, 153, 0.4) !important;
+    box-shadow: 0 0 12px rgba(236, 72, 153, 0.12) !important;
 }
 
 div[data-baseweb="select"] svg {
@@ -159,24 +185,24 @@ div[data-testid="stSlider"] [role="slider"] {
     background-color: #f87171 !important;
 }
 
-/* Pill Button */
+/* Pill Button with soft Violet to Pink Gradient */
 .stButton > button {
-    background: #8b5cf6 !important;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
     color: #ffffff !important;
     font-size: 15px !important;
     font-weight: 500 !important;
     padding: 14px 44px !important;
     border-radius: 50px !important;
     border: none !important;
-    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25) !important;
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.28) !important;
     transition: all 0.25s ease !important;
     cursor: pointer !important;
 }
 
 .stButton > button:hover {
-    background: #7c3aed !important;
+    background: linear-gradient(135deg, #9333ea 0%, #db2777 100%) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 6px 25px rgba(139, 92, 246, 0.4) !important;
+    box-shadow: 0 6px 28px rgba(236, 72, 153, 0.45) !important;
     color: #ffffff !important;
 }
 
